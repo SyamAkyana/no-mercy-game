@@ -60,7 +60,8 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .penalty-display.visible{display:block;}
 @keyframes penaltyPop{0%{transform:translateX(-50%) scale(0.5);opacity:0;}100%{transform:translateX(-50%) scale(1);opacity:1;}}
 
-.game-table{flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+.game-table{flex:1;position:relative;display:flex;align-items:center;justify-content:center;}
+#opponents{position:absolute;inset:0;}
   background:
     radial-gradient(ellipse at 50% 50%,rgba(106,32,32,0.6) 0%,rgba(74,21,21,0.4) 20%,rgba(42,10,10,0.3) 35%,transparent 55%),
     radial-gradient(ellipse at 50% 50%,rgba(139,0,0,0.15) 0%,transparent 70%),
@@ -73,7 +74,8 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
   pointer-events:none;z-index:0;}
 .game-table::after{content:'';position:absolute;top:50%;left:50%;width:min(80%,500px);height:min(80%,500px);transform:translate(-50%,-50%);
   border-radius:50%;border:2px solid rgba(180,120,60,0.12);box-shadow:0 0 60px rgba(139,0,0,0.2),inset 0 0 60px rgba(139,0,0,0.1);pointer-events:none;z-index:0;}
-.center-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;gap:20px;align-items:center;z-index:5;}
+.table-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:5;}
+.center-area{display:flex;gap:20px;align-items:center;}
 .pile{width:80px;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;}
 .draw-pile{background:
     radial-gradient(ellipse at 50% 50%,rgba(196,18,48,0.5),rgba(139,0,0,0.8) 60%,#3a0808),
@@ -302,14 +304,17 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 #toast.error{border-color:rgba(196,18,48,0.5);color:#ff9a8a;box-shadow:0 0 30px rgba(196,18,48,0.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #statusPopup{width:min(500px,92vw);}
-#cardPreview{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);z-index:200;opacity:0;pointer-events:none;transition:all 0.2s ease-out;}
-#cardPreview.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
-#cardPreview .card{width:160px;height:240px;box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 80px rgba(212,160,23,0.4);}
-#cardPreview .card .card-value{font-size:60px;}
-#cardPreview .card .card-label{font-size:14px;top:30px;}
-#cardPreview .card .card-corner{font-size:18px;top:8px;left:10px;}
-#cardPreview .card .card-corner.br{right:10px;bottom:8px;}
-#cardPreview .card .card-svg-full svg{width:120px;height:120px;margin-top:20px;}
+#cardPreview{opacity:0;pointer-events:none;transition:opacity 0.2s;display:flex;justify-content:center;padding:5px 0 2px;}
+#cardPreview.show{opacity:1;}
+#cardPreview .card{height:70px;box-shadow:0 4px 20px rgba(0,0,0,0.6),0 0 25px rgba(212,160,23,0.25);border-width:2px;}
+#cardPreview .card .card-value{font-size:16px;line-height:1;}
+#cardPreview .card .card-corner{font-size:8px;top:3px;left:5px;}
+#cardPreview .card .card-corner.br{right:5px;bottom:3px;}
+#cardPreview .card .card-suit-tl{font-size:7px;top:3px;right:3px;}
+#cardPreview .card .card-suit-br{font-size:7px;bottom:3px;left:5px;}
+#cardPreview .card .card-label{font-size:7px;bottom:4px;}
+#cardPreview .card .card-icon{font-size:12px;}
+#cardPreview .card .card-svg-full svg{width:32px;height:32px;margin-top:4px;}
 </style>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/game-engine.js"></script>
@@ -317,7 +322,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 <body>
 <div id="app">
   <div id="connBanner">CONNECTION LOST — RECONNECTING…</div>
-  <div id="cardPreview"></div>
   <div id="toast"></div>
   <div id="welcome" class="screen active">
     <h1>No Mercy</h1>
@@ -406,16 +410,19 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
     <div class="penalty-display" id="penaltyDisplay">+4 STACKED</div>
     <div id="turnToast">---</div>
     <div class="game-table" id="gameTable">
-      <div class="center-area">
-        <div class="pile draw-pile" id="drawPile">
-          <span class="pile-count" id="drawCount">0</span>
-          <span class="pile-label">Draw</span>
-        </div>
-        <div class="pile discard-pile" id="discardPile">
-          <span class="pile-label">Discard</span>
-        </div>
-      </div>
       <div id="opponents"></div>
+      <div class="table-center">
+        <div class="center-area">
+          <div class="pile draw-pile" id="drawPile">
+            <span class="pile-count" id="drawCount">0</span>
+            <span class="pile-label">Draw</span>
+          </div>
+          <div class="pile discard-pile" id="discardPile">
+            <span class="pile-label">Discard</span>
+          </div>
+        </div>
+        <div id="cardPreview"></div>
+      </div>
     </div>
     <div class="embers" id="embers"></div>
     <div class="hand-area" id="handArea">

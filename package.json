@@ -1,0 +1,14 @@
+{
+  "name": "no-mercy-multiplayer",
+  "version": "1.0.0",
+  "description": "UNO Show 'Em No Mercy — online multiplayer card game (Node.js + Socket.IO)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "socket.io": "^4.8.3"
+  }
+}

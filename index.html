@@ -121,7 +121,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .card.color-wild::after{background:linear-gradient(to bottom,rgba(255,255,255,0.06),transparent);}
 .card .card-value{font-size:28px;font-weight:900;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.6),0 0 8px rgba(0,0,0,0.3);line-height:1;}
 .card .card-icon{font-size:20px;line-height:1;margin-bottom:2px;}
-.card .card-label{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;text-align:center;line-height:1.1;padding:0 4px;color:rgba(255,255,255,0.9);text-shadow:1px 1px 2px rgba(0,0,0,0.6);}
+.card .card-label{position:absolute;top:16px;left:0;right:0;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;text-align:center;line-height:1.1;padding:0 4px;color:rgba(255,255,255,0.9);text-shadow:1px 1px 2px rgba(0,0,0,0.6);z-index:10;}
 .card .card-corner{position:absolute;top:3px;left:4px;font-size:8px;font-weight:700;color:rgba(255,255,255,0.85);text-shadow:0 1px 2px rgba(0,0,0,0.4);}
 .card .card-corner.br{left:auto;right:4px;top:auto;bottom:3px;transform:rotate(180deg);}
 .card .card-suit-tl{position:absolute;top:6px;right:6px;font-size:14px;opacity:0.7;line-height:1;}
@@ -293,6 +293,14 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 #turnToast{position:absolute;top:60px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:60;background:linear-gradient(145deg,rgba(30,10,10,0.95),rgba(15,5,5,0.97));border:1px solid rgba(212,160,23,0.4);border-radius:14px;padding:10px 20px;font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:var(--gold-bright);letter-spacing:1px;opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;box-shadow:0 0 25px rgba(212,160,23,0.3);}
 #turnToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #statusPopup{width:min(500px,92vw);}
+#cardPreview{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);z-index:200;opacity:0;pointer-events:none;transition:all 0.2s ease-out;}
+#cardPreview.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+#cardPreview .card{width:160px;height:240px;box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 80px rgba(212,160,23,0.4);}
+#cardPreview .card .card-value{font-size:60px;}
+#cardPreview .card .card-label{font-size:14px;top:30px;}
+#cardPreview .card .card-corner{font-size:18px;top:8px;left:10px;}
+#cardPreview .card .card-corner.br{right:10px;bottom:8px;}
+#cardPreview .card .card-svg-full svg{width:120px;height:120px;margin-top:20px;}
 </style>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/game-engine.js"></script>
@@ -300,6 +308,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 <body>
 <div id="app">
   <div id="connBanner">CONNECTION LOST — RECONNECTING…</div>
+  <div id="cardPreview"></div>
   <div id="welcome" class="screen active">
     <h1>No Mercy</h1>
     <p class="subtitle">How ruthless are you?</p>
@@ -1261,9 +1270,46 @@ document.getElementById('handCards').addEventListener('click',function(e){
   if(!card)return;
   const playable=ONLINE_MODE?G.playable:(getPlayable(G.cur).map(c=>c.id));
   if(!playable.includes(card.id))return;
-  if(G.selectedIdx===ci){G.selectedIdx=null;doPlayCard(ci,card.id);}
-  else{G.selectedIdx=ci;renderHand();}
+  if(G.selectedIdx===ci){
+    G.selectedIdx=null;
+    hideCardPreview();
+    doPlayCard(ci,card.id);
+  }else{
+    G.selectedIdx=ci;
+    showCardPreview(card);
+    renderHand();
+  }
 });
+
+document.getElementById('handCards').addEventListener('mouseover',function(e){
+  const el=e.target.closest('.card');
+  if(!el)return;
+  const ci=parseInt(el.dataset.ci);
+  if(isNaN(ci))return;
+  const p=paCurrent();
+  const card=p.hand[ci];
+  if(!card)return;
+  showCardPreview(card);
+});
+
+document.getElementById('handCards').addEventListener('mouseout',function(e){
+  const el=e.target.closest('.card');
+  if(el && G.selectedIdx==null){
+    hideCardPreview();
+  }
+});
+
+function showCardPreview(card){
+  const preview=document.getElementById('cardPreview');
+  const cls='color-'+card.color;
+  const inner=cardFace(card);
+  preview.innerHTML=`<div class="card ${cls}">${inner}</div>`;
+  preview.classList.add('show');
+}
+
+function hideCardPreview(){
+  document.getElementById('cardPreview').classList.remove('show');
+}
 document.getElementById('drawPile').addEventListener('click',function(){
   if(!G.anim&&G.phase==='playing'){
     if(ONLINE_MODE&&!G.yourTurn)return;

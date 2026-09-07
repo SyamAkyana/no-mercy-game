@@ -377,6 +377,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="direction-arrow" id="dirArrow">&#10227;</span>
         <button class="icon-btn" id="rulesBtn" title="Rules">?</button>
+        <button class="icon-btn" id="quitGameBtn" title="Quit Game">✕</button>
       </div>
     </div>
     <div class="penalty-display" id="penaltyDisplay">+4 STACKED</div>
@@ -1422,6 +1423,23 @@ document.getElementById('readyBtn').addEventListener('click',()=>{
   socket.emit('room:ready',{ready:!(me&&me.ready)});
 });
 document.getElementById('startGameBtn').addEventListener('click',()=>socket.emit('room:start'));
+
+/* ============ QUIT GAME ============ */
+document.getElementById('quitGameBtn').addEventListener('click',()=>{
+  if(ONLINE_MODE){
+    if(confirm('Leave the game? You will be disconnected from the room.')){
+      socket.emit('room:leave');
+      ONLINE_MODE=false;
+      resetG();
+      showScreen('welcome');
+    }
+  }else{
+    if(confirm('Quit to main menu?')){
+      resetG();
+      showScreen('welcome');
+    }
+  }
+});
 
 /* ============ RESIZE ============ */
 window.addEventListener('resize',function(){

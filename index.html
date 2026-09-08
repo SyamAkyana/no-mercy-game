@@ -60,14 +60,14 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .penalty-display.visible{display:block;}
 @keyframes penaltyPop{0%{transform:translateX(-50%) scale(0.5);opacity:0;}100%{transform:translateX(-50%) scale(1);opacity:1;}}
 
-.game-table{flex:1;position:relative;display:flex;align-items:center;justify-content:center;}
-#opponents{position:absolute;inset:0;}
+.game-table{flex:1;position:relative;display:flex;align-items:center;justify-content:center;
   background:
     radial-gradient(ellipse at 50% 50%,rgba(106,32,32,0.6) 0%,rgba(74,21,21,0.4) 20%,rgba(42,10,10,0.3) 35%,transparent 55%),
     radial-gradient(ellipse at 50% 50%,rgba(139,0,0,0.15) 0%,transparent 70%),
     repeating-radial-gradient(ellipse at 50% 50%,transparent 0px,transparent 18px,rgba(139,0,0,0.04) 19px,transparent 20px),
     radial-gradient(ellipse at 50% 50%,#1a0808,#0a0505);
   overflow:hidden;}
+#opponents{position:absolute;inset:0;}
 .game-table::before{content:'';position:absolute;inset:0;
   background:
     conic-gradient(from 0deg at 50% 50%,rgba(139,0,0,0.06) 0deg,transparent 15deg,rgba(139,0,0,0.04) 30deg,transparent 45deg,rgba(139,0,0,0.06) 60deg,transparent 75deg,rgba(139,0,0,0.04) 90deg,transparent 105deg,rgba(139,0,0,0.06) 120deg,transparent 135deg,rgba(139,0,0,0.04) 150deg,transparent 165deg,rgba(139,0,0,0.06) 180deg,transparent 195deg,rgba(139,0,0,0.04) 210deg,transparent 225deg,rgba(139,0,0,0.06) 240deg,transparent 255deg,rgba(139,0,0,0.04) 270deg,transparent 285deg,rgba(139,0,0,0.06) 300deg,transparent 315deg,rgba(139,0,0,0.04) 330deg,transparent 345deg,rgba(139,0,0,0.06) 360deg);
@@ -98,6 +98,12 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .opponent-info.active-turn{border-color:var(--gold);box-shadow:0 0 15px rgba(212,160,23,0.4),0 2px 10px rgba(0,0,0,0.4);}
 .opponent-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;}
 .opponent-name{font-weight:700;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
+.opponent-name .bot-tag{margin-left:4px;color:var(--text-dim);font-size:10px;font-weight:400;font-family:'Rajdhani',sans-serif;opacity:0.7;}
+.opponent-area.thinking .opponent-info{animation:thinkingPulse 0.7s ease-in-out infinite;}
+@keyframes thinkingPulse{0%,100%{box-shadow:0 2px 10px rgba(0,0,0,0.4);}50%{box-shadow:0 2px 10px rgba(0,0,0,0.4),0 0 12px rgba(212,160,23,0.5);}}
+.dealing-card{position:fixed;z-index:300;pointer-events:none;transition:all 0.38s cubic-bezier(.25,.46,.45,.94);}
+.name-card .bot-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(20,8,5,0.6);border:1px solid rgba(180,120,60,0.2);border-radius:8px;font-size:12px;color:var(--text-dim);min-width:80px;justify-content:center;}
+.name-card .bot-badge span{font-size:16px;}
 .opponent-card-count{color:var(--text-dim);}
 .card-backs{display:flex;justify-content:center;}
 .card-back-mini{width:28px;height:40px;border-radius:4px;
@@ -143,8 +149,12 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .card.small .card-svg svg{width:26px;height:26px;}
 .card.small .card-suit-tl,.card.small .card-suit-br{font-size:11px;}
 
-.hand-area{position:absolute;bottom:0;left:0;right:0;z-index:15;display:flex;justify-content:center;padding:12px 8px 16px;background:linear-gradient(to top,rgba(10,5,5,0.8),rgba(10,5,5,0.3) 60%,transparent);}
+.hand-area{position:absolute;bottom:0;left:0;right:0;z-index:15;display:flex;flex-direction:column;align-items:center;padding:8px 8px 16px;background:linear-gradient(to top,rgba(10,5,5,0.8),rgba(10,5,5,0.3) 60%,transparent);}
 .hand-cards{display:flex;justify-content:center;align-items:flex-end;position:relative;padding:0 10px;}
+.sort-row{display:flex;gap:6px;margin-bottom:6px;}
+.sort-btn{background:rgba(20,8,5,0.85);border:1px solid rgba(180,120,60,0.2);border-radius:8px;padding:3px 10px;color:var(--text-dim);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;white-space:nowrap;}
+.sort-btn:hover{border-color:rgba(212,160,23,0.5);color:var(--gold-bright);}
+.sort-btn.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(212,160,23,0.08);}
 .hand-cards .card{margin-left:-14px;cursor:pointer;}
 .hand-cards .card:first-child{margin-left:0;}
 .hand-cards .card.playable{border-color:rgba(212,160,23,0.5);box-shadow:0 0 10px rgba(212,160,23,0.2),0 4px 15px rgba(0,0,0,0.4);cursor:pointer;}
@@ -327,13 +337,20 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
     <h1>No Mercy</h1>
     <p class="subtitle">How ruthless are you?</p>
     <div class="welcome-box">
-      <label>How many players?</label>
-      <div class="player-count-row">
-        <button class="player-count-btn" data-count="2">2</button>
-        <button class="player-count-btn" data-count="3">3</button>
-        <button class="player-count-btn selected" data-count="4">4</button>
-        <button class="player-count-btn" data-count="5">5</button>
-        <button class="player-count-btn" data-count="6">6</button>
+      <label>Total Players</label>
+      <div class="player-count-row" id="totalRow">
+        <button class="player-count-btn" data-total="2">2</button>
+        <button class="player-count-btn" data-total="3">3</button>
+        <button class="player-count-btn selected" data-total="4">4</button>
+        <button class="player-count-btn" data-total="5">5</button>
+        <button class="player-count-btn" data-total="6">6</button>
+      </div>
+      <label style="margin-top:-8px;font-size:12px;">Human Players <span id="humanHint">(rest are bots)</span></label>
+      <div class="player-count-row" id="humanRow">
+        <button class="player-count-btn" data-humans="1">1</button>
+        <button class="player-count-btn selected" data-humans="2">2</button>
+        <button class="player-count-btn" data-humans="3">3</button>
+        <button class="player-count-btn" data-humans="4">4</button>
       </div>
       <button class="btn-primary" id="startBtn">Play Locally (Pass &amp; Play)</button>
       <div class="online-box">
@@ -426,6 +443,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
     </div>
     <div class="embers" id="embers"></div>
     <div class="hand-area" id="handArea">
+      <div class="sort-row" id="sortRow" style="display:none;">
+        <button class="sort-btn" id="sortByColor">Sort: Color</button>
+        <button class="sort-btn" id="sortByValue">Sort: Value</button>
+        <button class="sort-btn" id="sortReset">Reset</button>
+      </div>
       <div class="hand-cards" id="handCards"></div>
     </div>
   </div>
@@ -669,7 +691,7 @@ function recycle(){
 /* ============ INIT ============ */
 function initGame(names){
   resetG();
-  G.players=names.map((name,i)=>({id:i,name,hand:[],elim:false,stats:{played:0,drawn:0,penalties:0,swaps:0,passes:0}}));
+  G.players=names.map((name,i)=>({id:i,name,hand:[],elim:false,stats:{played:0,drawn:0,penalties:0,swaps:0,passes:0},isBot:isBot[i]||false}));
   G.n=names.length;
   G.draw=shuffle(buildDeck());
   for(let r=0;r<START_CARDS;r++)for(let p=0;p<G.n;p++)G.players[p].hand.push(G.draw.pop());
@@ -692,6 +714,61 @@ function applyStart(c){
   else if(c.type==='wild')G.startupWild=true;
   else if(c.type==='discardAll'){} // no matching cards at deal time
 }
+function startDealing(){
+  ONLINE_MODE=false;G.online=false;
+  G.phase='dealing';showScreen('gameScreen');render();
+  spawnEmbers();
+
+  const R=START_CARDS,total=G.n*R;
+  let done=0;
+
+  function dealOne(i){
+    if(G.phase!=='dealing')return;
+    const deckEl=document.getElementById('deckCard');
+    if(!deckEl){afterAll();return;}
+    const dRect=deckEl.getBoundingClientRect();
+    const p=G.players[i];
+    const handEl=document.querySelector(`.player-hand[data-player="${i}"]`);
+    if(!handEl){afterCard();return;}
+    const hRect=handEl.getBoundingClientRect();
+    const cLeft=dRect.left+(dRect.width-50)/2;
+    const cTop=dRect.top+(dRect.height-70)/2;
+    const hLeft=hRect.left+(hRect.width/2)-25+(i===0?0:(i%2===1?1:-1)*(i*12%30));
+    const hTop=hRect.top+(i===0?0:hRect.height/2-35);
+
+    const el=document.createElement('div');el.className='dealing-card';
+    el.style.cssText=`left:${cLeft}px;top:${cTop}px;width:50px;height:70px;`;
+    el.innerHTML='<div style="background:var(--card-back);border-radius:8px;width:100%;height:100%;border:2px solid #333;"></div>';
+    document.body.appendChild(el);
+
+    requestAnimationFrame(()=>{
+      el.style.left=hLeft+'px';
+      el.style.top=hTop+'px';
+      el.style.width='50px';el.style.height='70px';
+    });
+
+    el.addEventListener('transitionend',()=>{
+      setTimeout(()=>{el.remove();},50);
+      afterCard();
+    },{once:true});
+  }
+
+  function afterCard(){
+    done++;
+    if(done>=total)afterAll();
+    else setTimeout(()=>dealOne(done%G.n),55);
+  }
+
+  function afterAll(){
+    const top=G.discard[G.discard.length-1];
+    if(top.type==='wildColorRoulette'||top.type==='wildDraw6'||top.type==='wildDraw10'||top.type==='wildReverseDraw4'){
+      G.phase='color';render();showColorModal();
+    }else{startPlaying();}
+  }
+
+  setTimeout(()=>dealOne(0),180);
+}
+
 function startPlaying(){
   ONLINE_MODE=false;
   G.online=false;
@@ -753,7 +830,76 @@ function skipTurn(pi){
 }
 function goNext(){advanceTurn(G.cur);}
 
-/* ============ MERCY ============ */
+/* ============ BOT AI ============ */
+let botTimer=null;
+function clearBotTimer(){if(botTimer){clearTimeout(botTimer);botTimer=null;}}
+function botThink(pi){
+  clearBotTimer();
+  if(G.anim||G.phase!=='playing'||G.cur!==pi||G.players[pi].elim)return;
+  if(G.phase==='color'){botThinkColor(pi);return;}
+  if(G.pendingAction==='swap'){botThinkSwap(pi);return;}
+  const top=G.discard[G.discard.length-1];
+  const playable=getPlayable(pi).filter(c=>c);
+  if(playable.length===0){botTimer=setTimeout(()=>{drawCard(pi);},800+Math.random()*700);return;}
+  // Score each playable card — higher = better
+  const scored=playable.map(c=>{
+    let s=0;
+    if(c.type!=='number')s+=10;               // action cards preferred
+    if(c.type==='wild'||c.type==='wildDraw6'||c.type==='wildDraw10'||c.type==='wildReverseDraw4')s+=6;
+    if(c.type==='number')s+=c.value;
+    // Prefer matching the selected color (already playable) over wild
+    if(c.color===(G.selColor||top.color))s+=3;
+    // Avoid draw2/draw4 if other players are near winning
+    const othersNearWin=G.players.some((p,j)=>!p.elim&&j!==pi&&p.handLen<=2);
+    if(othersNearWin&&(c.type==='draw2'||c.type==='draw4'))s-=4;
+    // Avoid skipEveryone when you're winning
+    const amWinning=G.players[pi].handLen<=Math.min(...G.players.filter((p,j)=>!p.elim&&j!==pi).map(p=>p.handLen));
+    if(c.type==='skipEveryone'&&amWinning)s-=5;
+    return{card:c,score:s+Math.random()*2};
+  });
+  scored.sort((a,b)=>b.score-a.score);
+  const pick=scored[0].card;
+  const ci=G.players[pi].hand.findIndex(c=>c.id===pick.id);
+  // Small delay so it feels like "thinking"
+  botTimer=setTimeout(()=>{playCard(pi,ci);},700+Math.random()*1100);
+}
+function botThinkColor(pi){
+  clearBotTimer();
+  // Pick the color with the most cards in hand, or red as default
+  const counts={red:0,blue:0,green:0,yellow:0};
+  for(const c of G.players[pi].hand)if(c.color!=='wild'&&counts[c.color]!=null)counts[c.color]++;
+  const best=Object.entries(counts).reduce((a,b)=>b[1]>a[1]?b:a,['red',0])[0];
+  botTimer=setTimeout(()=>{afterColor(best);},600+Math.random()*600);
+}
+function botThinkSwap(pi){
+  clearBotTimer();
+  const pa=paList().filter(p=>String(p.id)!==String(pi)&&!p.elim);
+  if(pa.length===0){doNext();return;}
+  // Swap with the player holding the fewest cards (or most if we have many — aggressive swap)
+  const target=G.players[pi].handLen>10
+    ?pa.reduce((a,b)=>G.players[b.id].handLen<G.players[a.id].handLen?b:a)
+    :pa.reduce((a,b)=>G.players[b.id].handLen>G.players[a.id].handLen?b:a);
+  botTimer=setTimeout(()=>{handleSwap(target.id);},700+Math.random()*600);
+}
+function doNext(){
+  G.selectedIdx=null;
+  if(checkLastStanding())return;
+  G.cur=nextActive(G.cur);
+  G.anim=false;
+  render();
+  setTimeout(()=>showTransition(G.cur),400);
+}
+function handleSwap(targetId){
+  G.selectedIdx=null;
+  G.pendingAction=null;
+  const p=G.players[G.cur],t=G.players[targetId];
+  const tmp=[...p.hand];p.hand=[...t.hand];t.hand=tmp;
+  p.handLen=p.hand.length;t.handLen=t.hand.length;
+  p.stats.swaps++;
+  ann('SWAP!','#d4a017');
+  if(p.handLen===1)showUNOBtn();
+  doNext();
+}
 function checkMercy(pi){
   const p=G.players[pi];
   if(p.handLen>=MERCY&&!p.elim){
@@ -1045,15 +1191,23 @@ function renderOpponents(){
         <span class="opponent-name" style="text-decoration:line-through;">${p.name}</span>
         <span class="opponent-card-count">OUT</span></div>`;
     }else{
-      const bk=Math.min(p.handLen,8);
-      let bh='<div class="card-backs">';
-      for(let b=0;b<bk;b++)bh+='<div class="card-back-mini"></div>';
-      if(p.handLen>8)bh+=`<span style="font-size:11px;color:#8888aa;margin-left:4px;">+${p.handLen-8}</span>`;
-      bh+='</div>';
-      d.innerHTML=`<div class="opponent-info">
-        <div class="opponent-avatar" style="background:${p.avatar}">${p.name[0]}</div>
-        <span class="opponent-name">${p.name}</span>
-        <span class="opponent-card-count">${p.handLen} cards${nc}</span></div>${bh}`;
+      if(G.phase==='dealing'){
+        d.innerHTML=`<div class="opponent-info">
+          <div class="opponent-avatar" style="background:${p.avatar}">${p.name[0]}</div>
+          <span class="opponent-name">${p.name}</span>
+          <span class="opponent-card-count">Dealing...</span></div>`;
+      }else{
+        const bk=Math.min(p.handLen,8);
+        let bh='<div class="card-backs">';
+        for(let b=0;b<bk;b++)bh+='<div class="card-back-mini"></div>';
+        if(p.handLen>8)bh+=`<span style="font-size:11px;color:#8888aa;margin-left:4px;">+${p.handLen-8}</span>`;
+        bh+='</div>';
+        const botTag=p.isBot?' <span class="bot-tag">(Bot)</span>':'';
+        d.innerHTML=`<div class="opponent-info">
+          <div class="opponent-avatar" style="background:${p.avatar}">${p.name[0]}</div>
+          <span class="opponent-name">${p.name}${botTag}</span>
+          <span class="opponent-card-count">${p.handLen} cards${nc}</span></div>${bh}`;
+      }
     }
     c.appendChild(d);
     ops.push(p.id);
@@ -1093,6 +1247,7 @@ function renderCenter(){
 
 function renderHand(){
   const hc=document.getElementById('handCards');hc.innerHTML='';
+  if(G.phase==='dealing')return; // blank hand during the deal fly-in animation
   const p=paCurrent();
   if(!p||!p.hand)return;
   const pl=G.online?G.playable:(getPlayable(G.cur));
@@ -1112,7 +1267,39 @@ function renderHand(){
     el.innerHTML=inner;
     hc.appendChild(el);
   });
+  const sr=document.getElementById('sortRow');
+  if(sr)sr.style.display=(!G.online&&!G.anim&&G.cur===0&&p.hand.length>1)?'flex':'none';
 }
+let handSortOrder=null;
+const COLOR_ORDER={red:0,blue:1,green:2,yellow:3,wild:4};
+function sortHand(type){
+  if(G.anim||G.cur!==0)return;
+  const p=G.players[0];
+  if(!p||!p.hand||p.hand.length<2)return;
+  if(handSortOrder===type){handSortOrder=null;p.hand.reverse();}
+  else{handSortOrder=type;}
+  p.hand.sort((a,b)=>{
+    if(type==='color'){
+      const ca=COLOR_ORDER[a.color]??4,cb=COLOR_ORDER[b.color]??4;
+      if(ca!==cb)return ca-cb;
+      return(a.value||0)-(b.value||0);
+    }else{
+      const va=(a.type==='number'?a.value:100),vb=(b.type==='number'?b.value:100);
+      if(va!==vb)return va-vb;
+      return(COLOR_ORDER[a.color]??4)-(COLOR_ORDER[b.color]??4);
+    }
+  });
+  p.handLen=p.hand.length;
+  G.selectedIdx=null;hideCardPreview();
+  renderHand();
+  const btnC=document.getElementById('sortByColor');
+  const btnV=document.getElementById('sortByValue');
+  if(btnC)btnC.classList.toggle('active',handSortOrder==='color');
+  if(btnV)btnV.classList.toggle('active',handSortOrder==='value');
+}
+document.getElementById('sortByColor').addEventListener('click',()=>sortHand('color'));
+document.getElementById('sortByValue').addEventListener('click',()=>sortHand('value'));
+document.getElementById('sortReset').addEventListener('click',()=>{handSortOrder=null;renderHand();});
 
 /* ============ HANDLERS ============ */
 let ONLINE_MODE=false,socket=null,myGuestId=null,myRoom=null,joinOnConnect=null;
@@ -1451,7 +1638,10 @@ document.getElementById('transition').addEventListener('click',function(){
 });
 
 /* ============ MODALS & ANIM ============ */
-function showColorModal(){document.getElementById('colorModal').classList.add('active');}
+function showColorModal(){
+  document.getElementById('colorModal').classList.add('active');
+  if(G.players[G.cur]&&G.players[G.cur].isBot){botThinkColor(G.cur);}
+}
 function hideColorModal(){document.getElementById('colorModal').classList.remove('active');}
 function showSwapModal(){
   const list=document.getElementById('swapList');list.innerHTML='';
@@ -1460,13 +1650,15 @@ function showSwapModal(){
   for(const p of pa){
     if(String(p.id)===String(cur.id)||p.elim)continue;
     const btn=document.createElement('button');btn.className='player-select-btn';
+    const isTargetBot=G.players[p.id]&&G.players[p.id].isBot;
     btn.innerHTML=`<div class="opponent-avatar" style="background:${p.avatar};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;">${p.name[0]}</div>
-      <span>${p.name}</span>
+      <span>${p.name}${isTargetBot?' <span class="bot-tag">(Bot)</span>':''}</span>
       <span class="ps-cards">${p.handLen} cards</span>`;
     btn.addEventListener('click',()=>doSwapHands(p.id));
     list.appendChild(btn);
   }
   document.getElementById('swapModal').classList.add('active');
+  if(G.players[G.cur]&&G.players[G.cur].isBot){botThinkSwap(G.cur);}
 }
 function hideSwapModal(){document.getElementById('swapModal').classList.remove('active');}
 function showUNOBtn(){document.getElementById('unoOverlay').classList.add('active');}
@@ -1491,8 +1683,23 @@ function ann(text,color){
 function showTransition(pi){
   G.phase='transition';
   hideUNOBtn();
+  // Bots play automatically without showing the transition screen
+  if(G.players[pi]&&G.players[pi].isBot){
+    const tn=document.getElementById('transPlayerName');
+    tn.textContent=G.players[pi].name+' (Bot)';
+    document.getElementById('transition').querySelector('p').textContent='Bot is thinking...';
+    showScreen('transition');
+    botTimer=setTimeout(()=>{
+      G.phase='playing';
+      G.selectedIdx=null;
+      showScreen('gameScreen');render();
+      botThink(pi);
+    },700+Math.random()*600);
+    return;
+  }
   const tn=document.getElementById('transPlayerName');
-  tn.textContent=G.players[pi].name;tn.style.color=AVATARS[pi];
+  tn.textContent=G.players[pi].name;
+  document.getElementById('transition').querySelector('p').textContent='Tap anywhere to continue';
   showScreen('transition');
 }
 
@@ -1527,27 +1734,70 @@ function showGameOver(wi){
 }
 
 /* ============ WELCOME & NAMES ============ */
-let selCount=4;
-document.querySelectorAll('.player-count-btn').forEach(b=>{
+let selTotal=4,selHumans=2,botCount=0,isBot=[]; // isBot[i]=true if player i is a bot
+const BOT_NAMES=['Ace','Blitz','Cleo','Duke','Echo','Frost'];
+const BOT_AVATARS=['#6a5acd','#4682b4','#9370db','#5f9ea0','#dda0dd','#3cb371'];
+
+function syncHumanButtons(){
+  const maxH=Math.max(1,selTotal-1);
+  document.querySelectorAll('#humanRow .player-count-btn').forEach(b=>{
+    const n=parseInt(b.dataset.humans);
+    b.style.opacity=n>maxH?'0.3':'1';
+    b.style.pointerEvents=n>maxH?'none':'auto';
+  });
+  if(selHumans>maxH){selHumans=maxH;document.querySelectorAll('#humanRow .player-count-btn').forEach(b=>b.classList.remove('selected'));document.querySelector(`#humanRow [data-humans="${selHumans}"]`).classList.add('selected');}
+}
+
+document.querySelectorAll('#totalRow .player-count-btn').forEach(b=>{
   b.addEventListener('click',function(){
-    document.querySelectorAll('.player-count-btn').forEach(x=>x.classList.remove('selected'));
-    this.classList.add('selected');selCount=parseInt(this.dataset.count);
+    document.querySelectorAll('#totalRow .player-count-btn').forEach(x=>x.classList.remove('selected'));
+    this.classList.add('selected');selTotal=parseInt(this.dataset.total);
+    if(selHumans>selTotal-1){selHumans=Math.max(1,selTotal-1);document.querySelectorAll('#humanRow .player-count-btn').forEach(x=>x.classList.remove('selected'));document.querySelector(`#humanRow [data-humans="${selHumans}"]`).classList.add('selected');}
+    syncHumanButtons();
   });
 });
+document.querySelectorAll('#humanRow .player-count-btn').forEach(b=>{
+  b.addEventListener('click',function(){
+    const n=parseInt(this.dataset.humans);
+    if(n>Math.max(1,selTotal-1))return;
+    document.querySelectorAll('#humanRow .player-count-btn').forEach(x=>x.classList.remove('selected'));
+    this.classList.add('selected');selHumans=n;
+  });
+});
+syncHumanButtons();
 document.getElementById('startBtn').addEventListener('click',function(){
   const nc=document.getElementById('nameCards');nc.innerHTML='';
-  for(let i=0;i<selCount;i++){
+  botCount=Math.max(0,selTotal-selHumans);
+  isBot=[];
+  for(let i=0;i<selTotal;i++)isBot.push(false);
+  for(let i=selHumans;i<selTotal;i++)isBot[i]=true;
+  for(let i=0;i<selTotal;i++){
     const d=document.createElement('div');d.className='name-card';
-    d.innerHTML=`<div class="avatar" style="background:${AVATARS[i]}">${i+1}</div>
-      <input type="text" placeholder="Player ${i+1}" maxlength="12" data-player="${i}" value="Player ${i+1}">`;
+    if(isBot[i]){
+      const bn=BOT_NAMES[(i-selHumans)%BOT_NAMES.length];
+      d.innerHTML=`<div class="avatar" style="background:${BOT_AVATARS[(i-selHumans)%BOT_AVATARS.length]}">🤖</div>
+        <div class="bot-badge"><span>🤖</span> ${bn} <span style="opacity:0.5;font-size:11px;">(Bot)</span></div>`;
+    }else{
+      d.innerHTML=`<div class="avatar" style="background:${AVATARS[i]}">${i+1}</div>
+        <input type="text" placeholder="Player ${i+1}" maxlength="12" data-player="${i}" value="Player ${i+1}">`;
+    }
     nc.appendChild(d);
   }
   showScreen('nameEntry');
 });
 document.getElementById('dealBtn').addEventListener('click',function(){
   const inputs=document.querySelectorAll('#nameCards input');
-  const names=[];inputs.forEach(inp=>{names.push(inp.value.trim()||('Player '+(names.length+1)));});
-  initGame(names);startPlaying();
+  const names=[];
+  let bi=0;
+  for(let i=0;i<selTotal;i++){
+    if(isBot[i]){
+      names.push(BOT_NAMES[bi++%BOT_NAMES.length]);
+    }else{
+      const inp=inputs[names.filter((_,j)=>!isBot[j]).length];
+      names.push(inp?inp.value.trim():('Player '+(i+1)));
+    }
+  }
+  initGame(names);startDealing();
 });
 
 /* ============ RULES ============ */
@@ -1558,7 +1808,7 @@ document.getElementById('rulesModal').addEventListener('click',function(e){if(e.
 /* ============ GAME OVER ============ */
 document.getElementById('playAgainBtn').addEventListener('click',function(){
   const names=G.players.map?Object.values(G.players).map(p=>p.name):G.players.map(p=>p.name);
-  initGame(names);startPlaying();
+  initGame(names);startDealing();
 });
 document.getElementById('onlineRematchBtn').addEventListener('click',function(){
   if(socket)socket.emit('room:rematch');

@@ -6,3 +6,4 @@ node_modules/
 *.output
 .check.ignore
 no-mercy-game-improvement-plan.md
+test/e2e-smoke.js

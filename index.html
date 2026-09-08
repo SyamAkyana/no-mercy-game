@@ -12,9 +12,39 @@
   --gold: #d4a017; --gold-bright: #f0c040; --crimson: #8b0000; --crimson-light: #b22222;
   --glass: rgba(20,8,5,0.7); --glass-border: rgba(180,120,60,0.25);
   --felt-dark: #2a0a0a; --felt-mid: #4a1515; --felt-center: #6a2020;
+  --focus-ring: 0 0 0 3px rgba(212,160,23,0.7);
+  --min-touch: 44px;
 }
+
+/* High Contrast Mode */
+body.high-contrast{
+  --bg:#000;--bg2:#111;--text:#fff;--text-dim:#ccc;
+  --gold:#ffe500;--gold-bright:#fff700;--crimson:#ff2020;--crimson-light:#ff5050;
+  --glass:rgba(0,0,0,0.9);--glass-border:rgba(255,255,255,0.5);
+}
+body.high-contrast .card{box-shadow:0 4px 15px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.4);border-width:3px;}
+body.high-contrast .card.playable{box-shadow:0 0 0 3px #ffe500,0 8px 20px rgba(0,0,0,0.6);}
+body.high-contrast .card.selected{box-shadow:0 0 0 4px #fff,0 0 0 7px #ffe500,0 8px 20px rgba(0,0,0,0.6);}
+body.high-contrast .btn-primary,.body.high-contrast .btn-secondary{border-width:2px;}
+body.high-contrast .icon-btn{border-width:2px;min-width:var(--min-touch);min-height:var(--min-touch);}
+body.high-contrast .color-btn{border-width:3px;min-height:60px;}
+body.high-contrast .sort-btn,.body.high-contrast .player-count-btn{min-height:var(--min-touch);}
+body.high-contrast .uno-btn{border-width:5px;}
+/* Skip animations when prefers-reduced-motion */
+@media(prefers-reduced-motion:reduce){
+  *,.card,.hand-cards .card,.uno-btn,.announcement,.modal,.modal-overlay,
+  .turn-indicator,.turn-timer,.mercy-screen,.penalty-display{animation:none!important;transition:none!important;}
+}
+
+/* Visually hidden screen-reader-only utility */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+:focus-visible{outline:3px solid rgba(212,160,23,0.8);outline-offset:2px;border-radius:4px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw;user-select:none;-webkit-user-select:none;background:radial-gradient(ellipse at 50% 50%,#1a0808,#0a0505);}
+body.high-contrast{background:#000;}
 #app{width:100%;height:100vh;position:relative;overflow:hidden;}
 .screen{display:none;position:absolute;inset:0;z-index:1;}
 .screen.active{display:flex;}
@@ -115,6 +145,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .card-back-mini:first-child{margin-left:0;}
 
 .card{width:70px;height:105px;border-radius:10px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;border:2px solid rgba(255,255,255,0.25);font-family:'Orbitron',monospace;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.5),0 1px 3px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15);}
+.card:focus-visible{outline:var(--focus-ring);}
 .card::before{content:'';position:absolute;inset:3px;border-radius:7px;border:1px solid rgba(255,255,255,0.18);pointer-events:none;}
 .card::after{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,rgba(255,255,255,0.18),rgba(255,255,255,0.01));pointer-events:none;border-radius:8px 8px 0 0;}
 .card.color-red{background:linear-gradient(145deg,#e82040,#a01020);border-color:rgba(255,100,100,0.3);}
@@ -150,9 +181,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .card.small .card-suit-tl,.card.small .card-suit-br{font-size:11px;}
 
 .hand-area{position:absolute;bottom:0;left:0;right:0;z-index:15;display:flex;flex-direction:column;align-items:center;padding:8px 8px 16px;background:linear-gradient(to top,rgba(10,5,5,0.8),rgba(10,5,5,0.3) 60%,transparent);}
-.hand-cards{display:flex;justify-content:center;align-items:flex-end;position:relative;padding:0 10px;}
+.hand-cards{display:flex;justify-content:center;align-items:flex-end;position:relative;padding:0 10px;flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;max-width:100%;}
+.hand-cards::-webkit-scrollbar{height:0;}
+.hand-cards .card.scroll-item{scroll-snap-align:center;flex-shrink:0;}
 .sort-row{display:flex;gap:6px;margin-bottom:6px;}
-.sort-btn{background:rgba(20,8,5,0.85);border:1px solid rgba(180,120,60,0.2);border-radius:8px;padding:3px 10px;color:var(--text-dim);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;white-space:nowrap;}
+.sort-btn{background:rgba(20,8,5,0.85);border:1px solid rgba(180,120,60,0.2);border-radius:8px;padding:8px 12px;color:var(--text-dim);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;white-space:nowrap;min-height:var(--min-touch);display:flex;align-items:center;}
 .sort-btn:hover{border-color:rgba(212,160,23,0.5);color:var(--gold-bright);}
 .sort-btn.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(212,160,23,0.08);}
 .hand-cards .card{margin-left:-14px;cursor:pointer;}
@@ -163,6 +196,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .hand-cards .card:not(.playable){opacity:0.7;cursor:not-allowed;}
 .hand-cards .card.small{margin-left:-18px;}
 .hand-cards .card.small:first-child{margin-left:0;}
+/* Scroll indicators */
+.hand-scroll-hint{position:absolute;bottom:12px;width:30px;height:30px;display:none;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:18px;pointer-events:none;opacity:0.6;}
+.hand-scroll-hint.left{left:2px;}
+.hand-scroll-hint.right{right:2px;}
 
 .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(5,2,2,0.85);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .modal-overlay.active{display:flex;}
@@ -171,16 +209,18 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
 .modal h2{font-family:'Orbitron',monospace;font-size:24px;margin-bottom:16px;color:var(--gold);text-shadow:0 0 15px rgba(212,160,23,0.3);}
 .modal p{color:var(--text-dim);margin-bottom:20px;line-height:1.5;}
 .color-picker{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.color-btn{height:80px;border-radius:16px;border:3px solid rgba(255,255,255,0.15);cursor:pointer;font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:2px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;text-shadow:1px 1px 3px rgba(0,0,0,0.5);box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+.color-btn{height:80px;border-radius:16px;border:3px solid rgba(255,255,255,0.15);cursor:pointer;font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:2px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;text-shadow:1px 1px 3px rgba(0,0,0,0.5);box-shadow:0 4px 15px rgba(0,0,0,0.3);min-height:var(--min-touch);}
 .color-btn:hover{transform:scale(1.05);box-shadow:0 6px 25px rgba(0,0,0,0.4);}
+.color-btn:focus-visible{outline:var(--focus-ring);transform:scale(1.04);}
 .color-btn.c-red{background:linear-gradient(145deg,#e82040,#a01020);}
 .color-btn.c-blue{background:linear-gradient(145deg,#2080e0,#1050a0);}
 .color-btn.c-green{background:linear-gradient(145deg,#20b810,#158a0a);color:#fff;text-shadow:1px 1px 3px rgba(0,80,0,0.6);}
 .color-btn.c-yellow{background:linear-gradient(145deg,#e8c020,#b08a10);color:#fff;text-shadow:1px 1px 3px rgba(80,50,0,0.6);}
 
 .player-select-list{display:flex;flex-direction:column;gap:10px;}
-.player-select-btn{background:rgba(20,8,5,0.8);border:2px solid rgba(180,120,60,0.2);border-radius:12px;padding:14px 20px;color:var(--text);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
+.player-select-btn{background:rgba(20,8,5,0.8);border:2px solid rgba(180,120,60,0.2);border-radius:12px;padding:14px 20px;color:var(--text);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.2s;min-height:var(--min-touch);}
 .player-select-btn:hover{border-color:var(--gold);background:rgba(212,160,23,0.1);}
+.player-select-btn:focus-visible{outline:var(--focus-ring);}
 .player-select-btn .ps-cards{color:var(--text-dim);margin-left:auto;font-size:14px;}
 
 .uno-overlay{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;pointer-events:none;}
@@ -260,6 +300,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
   .opponent-avatar{width:20px;height:20px;font-size:9px;}
   .card-back-mini{width:22px;height:32px;}
   .uno-btn{width:110px;height:110px;font-size:22px;}
+  .icon-btn{min-width:44px;min-height:44px;font-size:20px;}
+  .sort-btn{min-height:44px;padding:10px 14px;font-size:13px;}
+  .join-btn{min-height:44px;padding:10px 18px;}
+  .btn-primary{min-height:48px;padding:14px 28px;}
+  .btn-secondary{min-height:44px;padding:12px 22px;}
 }
 @media(max-height:600px){.card{width:50px;height:75px;}.hand-area{padding:6px 4px 10px;}}
 ::-webkit-scrollbar{width:6px;}
@@ -420,8 +465,9 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
       <div class="turn-timer" id="turnTimer"><span class="tt-fill" id="ttFill"></span></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="direction-arrow" id="dirArrow">&#10227;</span>
-        <button class="icon-btn" id="rulesBtn" title="Rules">?</button>
-        <button class="icon-btn" id="quitGameBtn" title="Quit Game">✕</button>
+        <button class="icon-btn" id="highContrastBtn" title="Toggle High Contrast" aria-label="Toggle high contrast mode">🔲</button>
+        <button class="icon-btn" id="rulesBtn" title="Rules" aria-label="Game rules">?</button>
+        <button class="icon-btn" id="quitGameBtn" title="Quit Game" aria-label="Quit game">✕</button>
       </div>
     </div>
     <div class="penalty-display" id="penaltyDisplay">+4 STACKED</div>
@@ -430,11 +476,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
       <div id="opponents"></div>
       <div class="table-center">
         <div class="center-area">
-          <div class="pile draw-pile" id="drawPile">
+          <div class="pile draw-pile" id="drawPile" role="button" tabindex="0" aria-label="Draw pile — click or press Enter to draw a card">
             <span class="pile-count" id="drawCount">0</span>
             <span class="pile-label">Draw</span>
           </div>
-          <div class="pile discard-pile" id="discardPile">
+          <div class="pile discard-pile" id="discardPile" role="img" aria-label="Discard pile">
             <span class="pile-label">Discard</span>
           </div>
         </div>
@@ -444,12 +490,16 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);ov
     <div class="embers" id="embers"></div>
     <div class="hand-area" id="handArea">
       <div class="sort-row" id="sortRow" style="display:none;">
-        <button class="sort-btn" id="sortByColor">Sort: Color</button>
-        <button class="sort-btn" id="sortByValue">Sort: Value</button>
-        <button class="sort-btn" id="sortReset">Reset</button>
+        <button class="sort-btn" id="sortByColor" aria-label="Sort cards by color">Sort: Color</button>
+        <button class="sort-btn" id="sortByValue" aria-label="Sort cards by value">Sort: Value</button>
+        <button class="sort-btn" id="sortReset" aria-label="Reset card order">Reset</button>
       </div>
-      <div class="hand-cards" id="handCards"></div>
+      <div class="hand-cards" id="handCards" role="listbox" aria-label="Your hand — use arrow keys to navigate, Enter to play"></div>
+      <div class="hand-scroll-hint left" id="scrollHintLeft">&#9664;</div>
+      <div class="hand-scroll-hint right" id="scrollHintRight">&#9654;</div>
     </div>
+    <!-- Screen reader announcements -->
+    <div class="sr-only" aria-live="polite" aria-atomic="true" id="srAnnounce"></div>
   </div>
 
   <div id="transition" class="screen">
@@ -1264,11 +1314,18 @@ function renderHand(){
     el.className=`card ${cls}${ok?' playable':''}${sel}${sc}${dimmed}`;
     el.dataset.ci=ci;
     el.dataset.cardId=card.id;
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','option');
+    const colorName=card.color==='wild'?'Wild':card.color.charAt(0).toUpperCase()+card.color.slice(1);
+    const typeName=card.label||('Card '+card.value);
+    el.setAttribute('aria-label',`${colorName} ${typeName}${ok?' — playable':' — not playable'}`);
+    el.setAttribute('aria-selected',sel?'true':'false');
     el.innerHTML=inner;
     hc.appendChild(el);
   });
   const sr=document.getElementById('sortRow');
   if(sr)sr.style.display=(!G.online&&!G.anim&&G.cur===0&&p.hand.length>1)?'flex':'none';
+  updateScrollHints();
 }
 let handSortOrder=null;
 const COLOR_ORDER={red:0,blue:1,green:2,yellow:3,wild:4};
@@ -1676,6 +1733,7 @@ function ann(text,color){
   const el=document.createElement('div');el.className='announcement';
   el.textContent=text;el.style.color=color||'#fff';
   document.body.appendChild(el);
+  srAnnounce(text);
   if(annTimer)clearTimeout(annTimer);
   annTimer=setTimeout(()=>el.remove(),1800);
 }
@@ -1878,15 +1936,17 @@ window.addEventListener('resize',function(){
 });
 
 /* ============ TOUCH ============ */
-let tSY=0,tCI=-1;
+let tSY=0,tCI=-1,tSX=0,tHandled=false;
 document.getElementById('handCards').addEventListener('touchstart',function(e){
   const el=e.target.closest('.card');if(!el)return;
-  tSY=e.touches[0].clientY;tCI=parseInt(el.dataset.ci);
+  tSY=e.touches[0].clientY;tSX=e.touches[0].clientX;tCI=parseInt(el.dataset.ci);tHandled=false;
 },{passive:true});
 document.getElementById('handCards').addEventListener('touchend',function(e){
   if(tCI<0||G.anim||G.phase!=='playing'){tCI=-1;return;}
   const dy=tSY-e.changedTouches[0].clientY;
-  if(dy>40){
+  const dx=Math.abs(tSX-e.changedTouches[0].clientX);
+  if(dy>40&&dx<60){
+    tHandled=true;
     const card=G.players[G.cur].hand[tCI];
     if(card&&getPlayable(G.cur).find(c=>c.id===card.id)){
       G.selectedIdx=tCI;G.selectedIdx=null;playCard(G.cur,tCI);
@@ -1894,6 +1954,112 @@ document.getElementById('handCards').addEventListener('touchend',function(e){
   }
   tCI=-1;
 },{passive:true});
+
+/* Prevent ghost click after swipe on touch devices */
+document.getElementById('handCards').addEventListener('click',function(e){
+  if(tHandled){e.stopImmediatePropagation();e.preventDefault();tHandled=false;}
+},true);
+
+/* ============ ACCESSIBILITY: Screen Reader Announcements ============ */
+function srAnnounce(text){
+  const el=document.getElementById('srAnnounce');
+  if(el){el.textContent='';setTimeout(()=>{el.textContent=text;},50);}
+}
+
+/* ============ ACCESSIBILITY: High Contrast Toggle ============ */
+function toggleHighContrast(){
+  document.body.classList.toggle('high-contrast');
+  const on=document.body.classList.contains('high-contrast');
+  localStorage.setItem('highContrast',on?'1':'0');
+  srAnnounce(on?'High contrast mode enabled':'High contrast mode disabled');
+}
+(function(){
+  if(localStorage.getItem('highContrast')==='1')document.body.classList.add('high-contrast');
+  document.getElementById('highContrastBtn').addEventListener('click',toggleHighContrast);
+})();
+
+/* ============ ACCESSIBILITY: Keyboard Navigation ============ */
+document.getElementById('handCards').addEventListener('keydown',function(e){
+  if(G.anim||G.phase!=='playing')return;
+  const cards=[...this.querySelectorAll('.card')];
+  if(cards.length===0)return;
+  const focused=document.activeElement;
+  const idx=cards.indexOf(focused);
+
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+    e.preventDefault();
+    const next=Math.min(idx+1,cards.length-1);
+    cards[next].focus();
+    const ci=parseInt(cards[next].dataset.ci);
+    if(!isNaN(ci)){
+      const p=paCurrent();
+      if(p&&p.hand[ci])srAnnounce(`${p.hand[ci].label||p.hand[ci].value} — card ${next+1} of ${cards.length}`);
+    }
+  }else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+    e.preventDefault();
+    const prev=Math.max(idx-1,0);
+    cards[prev].focus();
+    const ci=parseInt(cards[prev].dataset.ci);
+    if(!isNaN(ci)){
+      const p=paCurrent();
+      if(p&&p.hand[ci])srAnnounce(`${p.hand[ci].label||p.hand[ci].value} — card ${prev+1} of ${cards.length}`);
+    }
+  }else if(e.key==='Enter'||e.key===' '){
+    e.preventDefault();
+    if(idx<0)return;
+    const ci=parseInt(cards[idx].dataset.ci);
+    const cardId=cards[idx].dataset.cardId;
+    if(isNaN(ci))return;
+    const p=paCurrent();
+    const card=p.hand[ci];
+    if(!card)return;
+    const playable=ONLINE_MODE?G.playable:(getPlayable(G.cur).map(c=>c.id));
+    if(!playable.includes(card.id)){srAnnounce('Cannot play this card');return;}
+    if(G.selectedIdx===ci){
+      G.selectedIdx=null;
+      doPlayCard(ci,card.id);
+    }else{
+      G.selectedIdx=ci;
+      showCardPreview(card);
+      renderHand();
+      srAnnounce(`Selected ${card.label||card.value}. Press Enter again to play.`);
+    }
+  }else if(e.key==='Escape'){
+    if(G.selectedIdx!==null){
+      G.selectedIdx=null;
+      renderHand();
+      srAnnounce('Card deselected');
+    }
+  }else if(e.key==='d'||e.key==='D'){
+    if(!ONLINE_MODE||G.yourTurn){
+      if(!G.anim&&G.phase==='playing'){doDraw();srAnnounce('Drawing a card');}
+    }
+  }
+});
+
+/* ============ ACCESSIBILITY: Scroll Hints ============ */
+function updateScrollHints(){
+  const hc=document.getElementById('handCards');
+  const left=document.getElementById('scrollHintLeft');
+  const right=document.getElementById('scrollHintRight');
+  if(!hc||!left||!right)return;
+  const atStart=hc.scrollLeft<=2;
+  const atEnd=hc.scrollLeft+hc.clientWidth>=hc.scrollWidth-2;
+  left.style.display=(!atStart&&hc.scrollWidth>hc.clientWidth)?'flex':'none';
+  right.style.display=(!atEnd&&hc.scrollWidth>hc.clientWidth)?'flex':'none';
+}
+document.getElementById('handCards').addEventListener('scroll',updateScrollHints);
+
+/* ============ ACCESSIBILITY: Draw Pile keyboard support ============ */
+document.getElementById('drawPile').addEventListener('keydown',function(e){
+  if(e.key==='Enter'||e.key===' '){
+    e.preventDefault();
+    if(!G.anim&&G.phase==='playing'){
+      if(ONLINE_MODE&&!G.yourTurn)return;
+      G.selectedIdx=null;doDraw();
+    }
+  }
+});
 
 /* ============ START ============ */
 showScreen('welcome');

@@ -68,7 +68,8 @@ function lobbyState() {
   const list = [];
   for (const r of rooms.values()) {
     if (r.status !== 'waiting') continue;
-    list.push({ code: r.code, isPrivate: r.isPrivate, count: r.players.size, max: MAX_PLAYERS, status: r.status });
+    const host = r.players.get(r.hostGuestId);
+    list.push({ code: r.code, isPrivate: r.isPrivate, count: r.players.size, max: MAX_PLAYERS, status: r.status, hostName: host ? host.name : 'Host' });
   }
   return { onlineCount: online.length, players: online, rooms: list };
 }

@@ -523,6 +523,19 @@ io.on('connection', (socket) => {
     io.to(room.code).emit('chat:message', entry);
   });
 
+  /* ---- Emoji quick-reactions (in-game, no rate-limit) ---- */
+  const VALID_EMOJIS = ['🔥','😱','😂','👍','⏳','💀','❤️','🎉'];
+  socket.on('chat:emoji', (data) => {
+    const guestId = guestIdFor(socket);
+    const room = guestId ? roomOf(guestId) : null;
+    if (!room) return;
+    const emoji = VALID_EMOJIS.includes(data && data.emoji) ? data.emoji : null;
+    if (!emoji) return;
+    const profile = profileOf(guestId);
+    if (!profile) return;
+    io.to(room.code).emit('chat:emoji', { guestId, name: profile.name, avatar: profile.avatar, emoji, ts: Date.now() });
+  });
+
   socket.on('disconnect', () => {
     const guestId = sockets.get(socket.id);
     if (!guestId) return;

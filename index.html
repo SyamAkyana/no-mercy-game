@@ -579,6 +579,56 @@ body.high-contrast{background:#000;}
 #spectBanner .sb-leave:hover{background:#e82040;}
 .spect-note{width:100%;text-align:center;color:var(--text-dim);font-size:14px;padding:20px;border:1px dashed rgba(32,128,224,0.4);border-radius:12px;background:rgba(10,20,40,0.4);}
 .spec-reveal{display:flex;gap:2px;align-items:center;}
+
+/* ============ EMOJI QUICK-CHAT ============ */
+.emoji-bar{display:flex;gap:4px;justify-content:center;margin-bottom:6px;}
+.emoji-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(180,120,60,0.2);background:rgba(20,8,5,0.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;min-height:var(--min-touch);}
+.emoji-btn:hover{background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.5);transform:scale(1.15);}
+.emoji-btn:active{transform:scale(0.9);}
+.emoji-float{position:fixed;z-index:350;pointer-events:none;font-size:36px;animation:emojiFloat 2s ease-out forwards;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));}
+@keyframes emojiFloat{
+  0%{transform:translateY(0) scale(0.5);opacity:1;}
+  30%{transform:translateY(-30px) scale(1.2);opacity:1;}
+  100%{transform:translateY(-120px) scale(0.8);opacity:0;}
+}
+.emoji-toast{position:fixed;z-index:350;pointer-events:none;display:flex;align-items:center;gap:6px;background:rgba(20,8,5,0.92);border:1px solid rgba(180,120,60,0.3);border-radius:20px;padding:6px 14px 6px 8px;font-size:13px;font-weight:600;color:var(--text);animation:emojiToastIn 0.3s ease-out,emojiToastOut 0.4s ease-in 2s forwards;box-shadow:0 4px 16px rgba(0,0,0,0.4);white-space:nowrap;}
+.emoji-toast .et-avatar{width:20px;height:20px;border-radius:50%;flex-shrink:0;}
+.emoji-toast .et-emoji{font-size:22px;}
+@keyframes emojiToastIn{0%{transform:scale(0.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+@keyframes emojiToastOut{0%{opacity:1;}100%{opacity:0;transform:translateY(-10px);}}
+
+/* ============ CARD COUNT THREAT COLORS ============ */
+.threat-low{color:#20b810!important;}
+.threat-med{color:#d4a017!important;}
+.threat-high{color:#e82040!important;text-shadow:0 0 8px rgba(232,32,64,0.4);}
+
+/* ============ LAST CARD GLOW ============ */
+.card.last-card-glow{animation:lastCardPulse 1.2s ease-in-out infinite;position:relative;}
+.card.last-card-glow::before{content:'';position:absolute;inset:-4px;border-radius:14px;background:linear-gradient(135deg,rgba(212,160,23,0.6),rgba(240,192,64,0.4),rgba(212,160,23,0.6));z-index:-1;animation:lastCardGlow 1.2s ease-in-out infinite;}
+@keyframes lastCardPulse{0%,100%{transform:translateY(-4px);box-shadow:0 0 15px rgba(212,160,23,0.4),0 4px 15px rgba(0,0,0,0.4);}50%{transform:translateY(-8px);box-shadow:0 0 30px rgba(212,160,23,0.7),0 8px 25px rgba(0,0,0,0.4);}}
+@keyframes lastCardGlow{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.03);}}
+
+/* ============ DISCARD SLAM ANIMATION ============ */
+.discard-slam{animation:discardSlam 0.35s ease-out;}
+@keyframes discardSlam{
+  0%{transform:scale(1.25);box-shadow:0 0 40px rgba(212,160,23,0.6),0 8px 30px rgba(0,0,0,0.5);}
+  60%{transform:scale(0.96);}
+  100%{transform:scale(1);box-shadow:0 2px 10px rgba(0,0,0,0.3);}
+}
+
+/* ============ VICTORY SPOTLIGHT ============ */
+.victory-crown{font-size:clamp(40px,10vw,72px);text-align:center;animation:crownBounce 0.6s ease-out;margin-top:-10px;}
+@keyframes crownBounce{0%{transform:translateY(-60px) scale(0);opacity:0;}60%{transform:translateY(5px) scale(1.1);opacity:1;}100%{transform:translateY(0) scale(1);opacity:1;}}
+.victory-name{font-family:'Orbitron',monospace;font-size:clamp(36px,9vw,60px);font-weight:900;text-align:center;
+  background:linear-gradient(135deg,#f0c040,#d4a017,#f5d060,#d4a017);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 30px rgba(212,160,23,0.5));animation:victoryNameIn 0.5s ease-out 0.2s both;}
+@keyframes victoryNameIn{0%{transform:scale(0.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.victory-subtitle{font-family:'Orbitron',monospace;font-size:clamp(14px,3vw,20px);color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;text-align:center;animation:victoryNameIn 0.5s ease-out 0.4s both;}
+.victory-stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:victoryNameIn 0.5s ease-out 0.6s both;}
+.victory-stat{background:rgba(20,8,5,0.8);border:1px solid rgba(180,120,60,0.25);border-radius:12px;padding:10px 16px;text-align:center;min-width:80px;}
+.victory-stat .vs-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;color:var(--gold-bright);}
+.victory-stat .vs-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
 </style>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/game-engine.js"></script>
@@ -771,6 +821,16 @@ body.high-contrast{background:#000;}
     </div>
     <div class="embers" id="embers"></div>
     <div class="hand-area" id="handArea">
+      <div class="emoji-bar" id="emojiBar" style="display:none;">
+        <button class="emoji-btn" data-emoji="🔥" title="Fire!">🔥</button>
+        <button class="emoji-btn" data-emoji="😱" title="Ouch!">😱</button>
+        <button class="emoji-btn" data-emoji="😂" title="LOL">😂</button>
+        <button class="emoji-btn" data-emoji="👍" title="Nice">👍</button>
+        <button class="emoji-btn" data-emoji="⏳" title="Hurry up">⏳</button>
+        <button class="emoji-btn" data-emoji="💀" title="Mercy'd">💀</button>
+        <button class="emoji-btn" data-emoji="❤️" title="Love">❤️</button>
+        <button class="emoji-btn" data-emoji="🎉" title="Celebrate">🎉</button>
+      </div>
       <div class="sort-row" id="sortRow" style="display:none;">
         <button class="sort-btn" id="sortByColor" aria-label="Sort cards by color">Sort: Color</button>
         <button class="sort-btn" id="sortByValue" aria-label="Sort cards by value">Sort: Value</button>
@@ -1596,20 +1656,22 @@ function renderOpponents(){
           for(let b=0;b<mk;b++)bh+=`<div class="card micro color-${p.hand[b].color}" style="width:34px;height:50px;">${cardFace(p.hand[b])}</div>`;
           if(p.hand.length>mk)bh+=`<span style="font-size:11px;color:#8888aa;margin-left:4px;">+${p.hand.length-mk}</span>`;
           bh+='</div>';
+          const tc=p.handLen<=2?'threat-high':p.handLen<=6?'threat-med':'';
           d.innerHTML=`<div class="opponent-info">
             <div class="opponent-avatar" style="background:${p.avatar}">${p.name[0]}</div>
             <span class="opponent-name">${p.name}</span>
-            <span class="opponent-card-count">${p.handLen} cards${nc} <span style="color:#7cc0ff;font-size:10px;">(revealed)</span></span></div>${bh}`;
+            <span class="opponent-card-count ${tc}">${p.handLen} cards${nc} <span style="color:#7cc0ff;font-size:10px;">(revealed)</span></span></div>${bh}`;
         }else{
           const bk=Math.min(p.handLen,8);
           let bh='<div class="card-backs">';
           for(let b=0;b<bk;b++)bh+='<div class="card-back-mini"></div>';
           if(p.handLen>8)bh+=`<span style="font-size:11px;color:#8888aa;margin-left:4px;">+${p.handLen-8}</span>`;
           bh+='</div>';
+          const tc=p.handLen<=2?'threat-high':p.handLen<=6?'threat-med':'';
           d.innerHTML=`<div class="opponent-info">
             <div class="opponent-avatar" style="background:${p.avatar}">${p.name[0]}</div>
             <span class="opponent-name">${p.name}${botTag}</span>
-            <span class="opponent-card-count">${p.handLen} cards${nc}</span></div>${bh}`;
+            <span class="opponent-card-count ${tc}">${p.handLen} cards${nc}</span></div>${bh}`;
         }
       }
     }
@@ -1635,6 +1697,7 @@ function getPos(count){
   return positions;
 }
 
+let _lastDiscardId=null;
 function renderCenter(){
   document.getElementById('drawCount').textContent=G.online?G.drawCount:G.draw.length;
   const de=document.getElementById('discardPile');
@@ -1644,7 +1707,14 @@ function renderCenter(){
     let inner=cardFace(top);
     const small=window.innerWidth<=600||window.innerHeight<=600;
     const w=small?64:76,h=small?96:114;
-    de.innerHTML=`<div class="card ${cls}" style="width:${w}px;height:${h}px;margin:0;cursor:default;opacity:1;filter:none;">${inner}</div><span class="pile-label">Discard</span>`;
+    const newCard=top.id!==_lastDiscardId;
+    _lastDiscardId=top.id;
+    const slam=newCard?' discard-slam':'';
+    de.innerHTML=`<div class="card ${cls}${slam}" style="width:${w}px;height:${h}px;margin:0;cursor:default;opacity:1;filter:none;">${inner}</div><span class="pile-label">Discard</span>`;
+    if(newCard){
+      const cardEl=de.querySelector('.card');
+      if(cardEl){cardEl.offsetHeight;cardEl.classList.remove('discard-slam');void cardEl.offsetWidth;cardEl.classList.add('discard-slam');}
+    }
   }
   if(G.selColor){
     const dot=document.createElement('div');
@@ -1673,7 +1743,8 @@ function renderHand(){
     const dimmed=!ok?' dimmed':'';
     let inner=cardFace(card);
     const el=document.createElement('div');
-    el.className=`card ${cls}${ok?' playable':''}${sel}${sc}${dimmed}`;
+    const lc=p.hand.length===1?' last-card-glow':'';
+    el.className=`card ${cls}${ok?' playable':''}${sel}${sc}${dimmed}${lc}`;
     el.dataset.ci=ci;
     el.dataset.cardId=card.id;
     el.setAttribute('tabindex','0');
@@ -1946,6 +2017,7 @@ function initSocket(){
   });
   socket.on('chat:message',m=>{chatMessages.push(m);if(chatMessages.length>50)chatMessages.shift();renderChat();});
   socket.on('chat:history',ms=>{chatMessages=(ms||[]).slice(-50);renderChat();});
+  socket.on('chat:emoji',onEmojiReceive);
   socket.on('chat:error',e=>{
     const cd=e&&e.cooldown;
     showToast(cd?`Slow down — wait ${Math.ceil(cd)}s before sending again.`:'Message not sent (rate limited).','error');
@@ -2055,6 +2127,7 @@ function onGameState(data){
   const wasInGame=document.getElementById('gameScreen').classList.contains('active');
   if(prevPhase==='lobby'&&G.phase!=='lobby')clearFeed(); // fresh game — reset feed
   showScreen('gameScreen');
+  showEmojiBar();
   render();
 
   /* Turn countdown ring — only meaningful online (server enforces the timeout). */
@@ -2574,6 +2647,7 @@ function spawnConfetti(){
   setTimeout(()=>{document.querySelectorAll('.confetti-piece').forEach(e=>e.remove());},4500);
 }
 function showGameOver(wi){
+  hideEmojiBar();
   const pa=paList();
   let w;
   if(ONLINE_MODE){
@@ -2582,18 +2656,41 @@ function showGameOver(wi){
   }else{
     w=G.players[wi];
   }
-  document.getElementById('winnerName').textContent=(w?w.name:'Unknown')+' Wins!';
   const sl=document.getElementById('statsList');sl.innerHTML='';
+  /* Victory spotlight */
+  const crown=document.createElement('div');crown.className='victory-crown';crown.textContent='👑';
+  sl.appendChild(crown);
+  const vName=document.createElement('div');vName.className='victory-name';vName.id='winnerName';vName.textContent=(w?w.name:'Unknown')+' Wins!';
+  sl.appendChild(vName);
+  const vSub=document.createElement('div');vSub.className='victory-subtitle';vSub.textContent='CHAMPION';
+  sl.appendChild(vSub);
+  /* Winner stat cards */
+  if(w){
+    const ws=w.stats||{played:0,drawn:0,swaps:0,passes:0};
+    const ratio=ws.drawn>0?((ws.played/ws.drawn).toFixed(1)):'∞';
+    const vRow=document.createElement('div');vRow.className='victory-stats-row';
+    vRow.innerHTML=`<div class="victory-stat"><div class="vs-val">${ws.played}</div><div class="vs-label">Played</div></div>
+      <div class="victory-stat"><div class="vs-val">${ws.drawn}</div><div class="vs-label">Drawn</div></div>
+      <div class="victory-stat"><div class="vs-val">${ratio}</div><div class="vs-label">P/D Ratio</div></div>
+      <div class="victory-stat"><div class="vs-val">${ws.swaps||0}</div><div class="vs-label">Swaps</div></div>`;
+    sl.appendChild(vRow);
+  }
+  /* Full player standings */
+  const standTitle=document.createElement('h3');
+  standTitle.style.cssText='color:#d4a017;font-family:Orbitron,monospace;font-size:12px;letter-spacing:1px;margin:16px 0 8px;text-align:center;';
+  standTitle.textContent='STANDINGS';
+  sl.appendChild(standTitle);
   for(const p of pa){
     const r=document.createElement('div');
     r.className='stat-row'+(p.elim?' eliminated':'');
     const isWinner=w&&String(p.id)===String(w.id);
-    const detail=isWinner?'Winner!':(p.elim?'Eliminated ('+p.handLen+' cards)':p.handLen+' cards remaining');
+    const detail=isWinner?'🏆 Winner':(p.elim?'💀 Eliminated ('+p.handLen+' cards)':p.handLen+' cards remaining');
     r.innerHTML=`<span class="stat-name" style="color:${p.avatar}">${p.name}</span><span class="stat-detail">${detail}</span>`;
     sl.appendChild(r);
   }
-  const sd=document.createElement('div');sd.style.cssText='margin-top:16px;';
-  let sh='<h3 style="color:#d4a017;font-family:Orbitron,monospace;font-size:12px;letter-spacing:1px;margin-bottom:8px;">STATS</h3>';
+  /* Detailed stats */
+  const sd=document.createElement('div');sd.style.cssText='margin-top:12px;';
+  let sh='<h3 style="color:#d4a017;font-family:Orbitron,monospace;font-size:12px;letter-spacing:1px;margin-bottom:8px;text-align:center;">DETAILED STATS</h3>';
   for(const p of pa){
     const s=p.stats||{played:0,drawn:0,swaps:0,passes:0};
     sh+=`<div class="stat-row" style="margin-bottom:4px;"><span style="font-size:13px;color:${p.avatar};font-weight:700;">${p.name}</span>
@@ -2968,6 +3065,45 @@ document.getElementById('historyList').addEventListener('click',function(e){
   const item=e.target.closest('.history-item');
   if(item){histSel=item.dataset.id;renderHistory();}
 });
+
+/* ============ EMOJI QUICK-CHAT ============ */
+const EMOJI_POSITIONS=['top-right','top-left','bottom-right','bottom-left'];
+function showEmojiBar(){
+  if(ONLINE_MODE&&!IS_SPECTATOR)document.getElementById('emojiBar').style.display='flex';
+}
+function hideEmojiBar(){document.getElementById('emojiBar').style.display='none';}
+document.getElementById('emojiBar').addEventListener('click',function(e){
+  const btn=e.target.closest('.emoji-btn');
+  if(!btn)return;
+  const emoji=btn.dataset.emoji;
+  if(ONLINE_MODE&&socket){
+    socket.emit('chat:emoji',{emoji});
+    spawnLocalEmoji(emoji);
+  }
+});
+function spawnLocalEmoji(emoji){
+  // Spawn a floating emoji from the bottom center
+  const el=document.createElement('div');el.className='emoji-float';el.textContent=emoji;
+  el.style.left=(40+Math.random()*20)+'vw';el.style.bottom='120px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2100);
+}
+function onEmojiReceive(data){
+  if(!data||!data.emoji)return;
+  // Spawn floating emoji near opponent area
+  const el=document.createElement('div');el.className='emoji-float';el.textContent=data.emoji;
+  // Position near the sender's opponent area or random top area
+  const rx=10+Math.random()*80;
+  el.style.left=rx+'vw';el.style.top=(15+Math.random()*25)+'vh';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2100);
+  // Show a small toast with sender name + emoji
+  const toast=document.createElement('div');toast.className='emoji-toast';
+  toast.innerHTML=`<span class="et-avatar" style="background:${data.avatar}"></span><span style="font-weight:700;color:${data.avatar}">${escapeHtml(data.name)}</span><span class="et-emoji">${data.emoji}</span>`;
+  toast.style.right='16px';toast.style.bottom=(100+Math.random()*120)+'px';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2600);
+}
 
 /* ============ CHAT BUTTONS ============ */
 document.getElementById('chatToggleBtn').addEventListener('click',function(){

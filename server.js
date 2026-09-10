@@ -67,9 +67,13 @@ function lobbyState() {
   }
   const list = [];
   for (const r of rooms.values()) {
-    if (r.status !== 'waiting') continue;
+    if (r.status === 'playing' && r.isPrivate) continue; // private playing rooms not advertised
     const host = r.players.get(r.hostGuestId);
-    list.push({ code: r.code, isPrivate: r.isPrivate, count: r.players.size, max: MAX_PLAYERS, status: r.status, hostName: host ? host.name : 'Host' });
+    if (r.status === 'waiting') {
+      list.push({ code: r.code, isPrivate: r.isPrivate, count: r.players.size, max: MAX_PLAYERS, status: r.status, hostName: host ? host.name : 'Host' });
+    } else if (r.status === 'playing') {
+      list.push({ code: r.code, isPrivate: false, count: r.players.size, max: MAX_PLAYERS, status: r.status, hostName: host ? host.name : 'Host', spectate: true });
+    }
   }
   return { onlineCount: online.length, players: online, rooms: list };
 }
@@ -84,6 +88,7 @@ function roomPublic(room) {
     isPrivate: room.isPrivate,
     status: room.status,
     hostGuestId: room.hostGuestId,
+    rules: room.rules,
     players: [...room.players.values()].map(p => ({
       guestId: p.guestId, name: p.name, avatar: p.avatar,
       ready: p.ready, connected: p.connected, host: p.guestId === room.hostGuestId
@@ -122,7 +127,36 @@ function gameStateFor(room, guestId) {
     }),
     playable: g.currentPlayerId === guestId ? E.getPlayableIds(g, guestId) : [],
     winner: g.winner,
+    rules: room.rules,
     yourTurn: g.currentPlayerId === guestId,
+    turnNumber: g.turnNumber,
+    gameOver: g.phase === 'done',
+    finalHands: g.phase === 'done' ? Object.fromEntries(
+      g.order.map(id => [id, g.players[id].hand])
+    ) : null
+  };
+}
+function spectatorStateFor(room) {
+  const g = room.game;
+  return {
+    spectator: true,
+    topCard: g.discard.length > 0 ? g.discard[g.discard.length - 1] : null,
+    drawCount: g.draw.length,
+    currentPlayerId: g.currentPlayerId,
+    direction: g.direction,
+    pending: g.pending,
+    selColor: g.selColor,
+    phase: g.phase,
+    order: g.order.map(id => {
+      const pl = g.players[id];
+      const rp = room.players.get(id);
+      return {
+        guestId: id, name: pl.name, avatar: pl.avatar, handLen: pl.handLen,
+        elim: pl.elim, hasCalledUno: pl.hasCalledUno, stats: pl.stats,
+        hand: pl.hand, connected: rp ? rp.connected : false
+      };
+    }),
+    winner: g.winner,
     turnNumber: g.turnNumber,
     gameOver: g.phase === 'done',
     finalHands: g.phase === 'done' ? Object.fromEntries(
@@ -135,6 +169,11 @@ function broadcastGame(room, events) {
   for (const p of room.players.values()) {
     if (p.connected && p.socketId) {
       io.to(p.socketId).emit('game:state', gameStateFor(room, p.guestId));
+    }
+  }
+  for (const s of room.spectators) {
+    if (s.connected && s.socketId) {
+      io.to(s.socketId).emit('game:state', spectatorStateFor(room));
     }
   }
 }
@@ -198,8 +237,10 @@ function newRoom(hostGuestId, isPrivate) {
     code, isPrivate, hostGuestId,
     status: 'waiting',
     players: new Map(),
+    spectators: [],
     game: null,
-    chat: []
+    chat: [],
+    rules: { mercy: 25, stacking: true, sevenSwap: true, zeroPass: true }
   };
   rooms.set(code, room);
   return room;
@@ -240,7 +281,7 @@ function startGame(room) {
     const p = room.players.get(id);
     return { id, name: p.name, avatar: p.avatar };
   });
-  room.game = E.createGame(enginePlayers);
+  room.game = E.createGame(enginePlayers, room.rules);
   room.status = 'playing';
   room.players.forEach(p => { p.ready = false; });
   const events = [{ type: 'game-start' }, { type: 'turn', playerId: room.game.currentPlayerId }];
@@ -281,6 +322,15 @@ function onGuestJoin(socket, data) {
     broadcastRoom(room);
     if (room.status === 'playing' && room.game) {
       socket.emit('game:state', gameStateFor(room, guestId));
+      scheduleTurnWatch(room);
+    }
+    socket.emit('chat:history', room.chat.slice(-50));
+  } else if (room && room.spectators.some(s => s.guestId === guestId)) {
+    const sp = room.spectators.find(s => s.guestId === guestId);
+    sp.connected = true; sp.socketId = socket.id;
+    socket.join(room.code);
+    if (room.status === 'playing' && room.game) {
+      socket.emit('game:state', spectatorStateFor(room));
       scheduleTurnWatch(room);
     }
     socket.emit('chat:history', room.chat.slice(-50));
@@ -352,7 +402,34 @@ io.on('connection', (socket) => {
     const room = roomOf(guestId);
     if (room) socket.leave(room.code);
     leaveRoom(guestId);
+    // Also remove as spectator
+    for (const r of rooms.values()) {
+      const idx = r.spectators.findIndex(s => s.guestId === guestId);
+      if (idx >= 0) { r.spectators.splice(idx, 1); }
+    }
     broadcastLobby();
+  });
+
+  socket.on('room:spectate', (data) => {
+    const guestId = guestIdFor(socket);
+    if (!guestId) return;
+    if (roomOf(guestId)) return sendError(socket, 'Leave your room first.');
+    const code = String(data && data.code || '').trim().toUpperCase();
+    const room = rooms.get(code);
+    if (!room) return socket.emit('room:error', { message: 'Room not found.' });
+    if (room.status !== 'playing') return socket.emit('room:error', { message: 'Game not in progress.' });
+    socket.join(code);
+    const profile = profileOf(guestId);
+    // Remove from any other room's spectator list first
+    for (const r of rooms.values()) {
+      const idx = r.spectators.findIndex(s => s.guestId === guestId);
+      if (idx >= 0) r.spectators.splice(idx, 1);
+    }
+    room.spectators.push({ guestId, name: profile.name, avatar: profile.avatar, connected: true, socketId: socket.id });
+    profile.roomCode = room.code;
+    socket.emit('room:spectating', { code: room.code });
+    socket.emit('game:state', spectatorStateFor(room));
+    socket.emit('chat:history', room.chat.slice(-50));
   });
 
   socket.on('room:ready', (data) => {
@@ -362,6 +439,19 @@ io.on('connection', (socket) => {
     const p = room.players.get(guestId);
     if (p) p.ready = !!(data && data.ready);
     broadcastRoom(room); broadcastLobby();
+  });
+
+  socket.on('room:setRules', (data) => {
+    const guestId = guestIdFor(socket);
+    const room = guestId ? roomOf(guestId) : null;
+    if (!room || room.status !== 'waiting') return;
+    if (guestId !== room.hostGuestId) return sendError(socket, 'Only the host can change rules.');
+    const r = data && typeof data === 'object' ? data : {};
+    if (typeof r.mercy === 'number') room.rules.mercy = Math.max(10, Math.min(50, r.mercy));
+    if (typeof r.stacking === 'boolean') room.rules.stacking = r.stacking;
+    if (typeof r.sevenSwap === 'boolean') room.rules.sevenSwap = r.sevenSwap;
+    if (typeof r.zeroPass === 'boolean') room.rules.zeroPass = r.zeroPass;
+    broadcastRoom(room);
   });
 
   socket.on('room:rematch', () => {
@@ -447,6 +537,10 @@ io.on('connection', (socket) => {
       if (room.status === 'playing') broadcastGame(room, [{ type: 'disconnected', guestId }]);
       broadcastRoom(room);
       if (room.status === 'playing') scheduleTurnWatch(room);
+    } else if (room) {
+      // Spectator disconnect — keep in list, mark offline
+      const sp = room.spectators.find(s => s.guestId === guestId);
+      if (sp) { sp.connected = false; sp.socketId = null; }
     }
     broadcastLobby();
   });

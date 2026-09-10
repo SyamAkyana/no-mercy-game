@@ -96,14 +96,15 @@
     if (card.type === 'number' && topCard.type === 'number' && card.value === topCard.value) return true;
     return false;
   }
-  function canStack(card, topCard) {
+  function canStack(card, topCard, state) {
+    if (state && !state.rules.stacking) return false;
     if (card.drawValue <= 0 || topCard.drawValue <= 0) return false;
     return card.drawValue >= topCard.drawValue;
   }
   function getPlayableIds(state, playerId) {
     const h = state.players[playerId].hand, top = topCard(state);
     if (!top) return [];
-    if (state.pending > 0) return h.filter(c => canStack(c, top)).map(c => c.id);
+    if (state.pending > 0) return h.filter(c => canStack(c, top, state)).map(c => c.id);
     return h.filter(c => canPlay(c, top, state.selColor)).map(c => c.id);
   }
 
@@ -138,8 +139,9 @@
   function evtTurn(evt, playerId) { evt.push({ type: 'turn', playerId }); }
 
   /* ---------------- Setup ---------------- */
-  function createGame(players) {
+  function createGame(players, rules) {
     // players: [{id, name, avatar}]
+    // rules: { mercy:25, stacking:true, sevenSwap:true, zeroPass:true }  (optional)
     const state = {
       phase: 'playing',
       order: players.map(p => p.id),
@@ -155,7 +157,8 @@
       winner: null,
       turnNumber: 0,
       turnStartPlayerId: null,
-      cardSeq: 0
+      cardSeq: 0,
+      rules: Object.assign({ mercy: MERCY, stacking: true, sevenSwap: true, zeroPass: true }, rules || {})
     };
     for (const p of players) {
       state.players[p.id] = {
@@ -193,7 +196,7 @@
   /* ---------------- Mercy / win ---------------- */
   function checkMercy(state, playerId, evt) {
     const p = state.players[playerId];
-    if (p.handLen >= MERCY && !p.elim) {
+    if (p.handLen >= (state.rules.mercy || MERCY) && !p.elim) {
       p.elim = true;
       if (evt) evt.push({ type: 'mercy', playerId, name: p.name, count: p.handLen });
       return true;
